@@ -1,0 +1,49 @@
+/* GENERAL STYLING */
+body {
+  margin: 0;
+  background-color: rgb(245, 245, 245);
+  color: black;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.homePageHero {
+  text-align: center;
+  margin-top: 10em;
+}
+
+h1 {
+  font-size: 100px;
+  color: rgb(130, 130, 201);
+}
+
+/* STYLING FOR LINKS */
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  color: black;
+}
+a:hover {
+  color: rgb(255, 115, 50);
+}
+
+/* STYLING FOR NAVIGATION BAR */
+.navbar {
+  background-color: rgb(225, 225, 225);
+}
+
+.navbarSectionMenu {
+  float: right;
+  padding: 2em;
+}
+
+.navbarSectionLogo {
+  padding: 2em;
+}
+
+.navBtns {
+  padding: 1em;
+  text-align: right;
+  color: rgb(41, 41, 41);
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
