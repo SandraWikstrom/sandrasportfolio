@@ -1,0 +1,15 @@
+<h4>Reviews</h4>
+
+{{#if reviews.length}}
+
+  <ul>
+    {{#each reviews}}
+      <li>{{evaluation}}</li>
+    {{/each}}
+  </ul>
+
+{{else}}
+
+  <p>There are no reviews right now. Write the first one!</p>
+
+{{/if}}
