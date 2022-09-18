@@ -17,6 +17,10 @@ app.get("/", function (request, response) {
   response.render("home.hbs");
 });
 
+app.get("/portfolio", function (request, response) {
+  response.render("portfolio.hbs");
+});
+
 app.get("/about-me", function (request, response) {
   const model = {
     reviews: data.reviews,
@@ -26,7 +30,11 @@ app.get("/about-me", function (request, response) {
 });
 
 app.get("/contact-me", function (request, response) {
-    response.render("contact.hbs");
-  });
+  response.render("contact.hbs");
+});
+
+app.get("/log-in", function (request, response) {
+  response.render("login.hbs");
+});
 
 app.listen(8080);

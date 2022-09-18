@@ -6,6 +6,15 @@ body {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
+.container {
+  margin: 5em;
+}
+
+img {
+  width: 20vw;
+  object-fit: cover;
+}
+
 h1 {
   font-size: 100px;
   color: rgb(130, 130, 201);
@@ -20,14 +29,6 @@ h4 {
 .homePageHero {
   text-align: center;
   margin-top: 10em;
-}
-
-/* ABOUT ME STYLING */
-
-.container {
-  display: grid;
-  margin: 10em;
-  margin-top: 5em;
 }
 
 /* STYLING FOR LINKS */
@@ -46,18 +47,7 @@ a:hover {
   background-color: rgb(225, 225, 225);
 }
 
-.navbarSectionMenu {
+.navbar-section {
   float: right;
   padding: 2em;
-}
-
-.navbarSectionLogo {
-  padding: 2em;
-}
-
-.navBtns {
-  padding: 1em;
-  text-align: right;
-  color: rgb(41, 41, 41);
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
