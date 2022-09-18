@@ -6,14 +6,28 @@ body {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
+h1 {
+  font-size: 100px;
+  color: rgb(130, 130, 201);
+}
+
+h4 {
+  color: rgb(130, 130, 201);
+}
+
+/* HOME STYLING */
+
 .homePageHero {
   text-align: center;
   margin-top: 10em;
 }
 
-h1 {
-  font-size: 100px;
-  color: rgb(130, 130, 201);
+/* ABOUT ME STYLING */
+
+.container {
+  display: grid;
+  margin: 10em;
+  margin-top: 5em;
 }
 
 /* STYLING FOR LINKS */

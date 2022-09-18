@@ -1,15 +1,35 @@
-<h4>Reviews</h4>
+<div class="container">
+  <div class="columns">
+    <div class="aboutMe">
+      <h4>About Me</h4>
+      <p>I'm Sandra, a 21 year-old from Gothenburg. I'm currently based in
+        Jönköping, where I study Graphic Design and Web Development. I've always
+        loved art - photography, graphic design, painting, knitting - you name
+        it. If I'm not creating something, you'll find me reading or listening
+        to a good podcast. My work is focused on making ordinary things feel
+        playful, bold, and fun. This portfolio is meant to share some of that,
+        as well as show my process. Hop in, keep all hands inside the vehicle
+        and we'll go for a ride. Please enjoy.</p>
+    </div>
+    <div class="faq">
+      <h4>FAQ</h4>
+      <p>Text</p>
+    </div>
+    <div class="reviews">
+      <h4>Reviews</h4>
+      {{#if reviews.length}}
 
-{{#if reviews.length}}
+        <ul>
+          {{#each reviews}}
+            <li>{{evaluation}}</li>
+          {{/each}}
+        </ul>
 
-  <ul>
-    {{#each reviews}}
-      <li>{{evaluation}}</li>
-    {{/each}}
-  </ul>
+      {{else}}
 
-{{else}}
+        <p>There are no reviews right now. Write the first one!</p>
 
-  <p>There are no reviews right now. Write the first one!</p>
-
-{{/if}}
+      {{/if}}
+    </div>
+  </div>
+</div>
