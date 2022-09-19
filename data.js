@@ -5,3 +5,11 @@ exports.reviews = [{
     id: 2,
     evaluation: "I have never been this impressed by someone in my entire life.",
 }]
+
+/*exports.photos = [{
+    id: 1,
+    photograph: "PHOTO HERE",
+}, {
+    id: 2,
+    photograph: "PHOTO HERE",
+}]*/
