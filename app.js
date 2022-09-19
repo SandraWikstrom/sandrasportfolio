@@ -24,6 +24,7 @@ app.get("/portfolio", function (request, response) {
 app.get("/about-me", function (request, response) {
   const model = {
     reviews: data.reviews,
+    faqs: data.faqs,
   };
 
   response.render("about.hbs", model);

@@ -1,3 +1,4 @@
+<!-- https://picturepan2.github.io/spectre/layout/grid.html -->
 <div class="container">
   <div class="columns">
     <div class="column col-12">
@@ -12,8 +13,22 @@
         <br />
         Hop in, keep all hands inside the vehicle and we'll go for a ride.
         Please enjoy.</p></div>
-    <div class="column col-12"><h4>FAQ</h4>
-      <p>Text</p></div>
+    <div class="column col-12">
+      <h4>FAQ</h4>
+      {{#if faqs.length}}
+
+        <ul>
+          {{#each faqs}}
+            <li>{{question}}</li>
+          {{/each}}
+        </ul>
+
+      {{else}}
+
+        <p>There are no questions right now. Ask the first one!</p>
+
+      {{/if}}
+    </div>
     <div class="column col-12">
       <h4>Reviews</h4>
       {{#if reviews.length}}
