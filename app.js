@@ -11,6 +11,13 @@ db.run(`
   )
 `);
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS faqs (
+    id INTEGER PRIMARY KEY,
+    question TEXT
+  )
+`);
+
 const app = express();
 
 app.engine(
@@ -40,6 +47,7 @@ app.get("/portfolio-admin", function (request, response) {
   response.render("portfolio-admin.hbs");
 });
 
+/*REVIEW GET*/
 app.get("/about-me", function (request, response) {
   const query = `SELECT * FROM reviews`;
 
@@ -52,6 +60,7 @@ app.get("/about-me", function (request, response) {
   });
 });
 
+/*REVIEW POST*/
 app.post("/about-me", function (request, response) {
   const evaluation = request.body.evaluation;
 
@@ -61,6 +70,32 @@ app.post("/about-me", function (request, response) {
 
   db.run(query, value, function(error) {
     response.redirect("/about-me");
+  });
+});
+
+/*FAQ GET*/
+app.get("/faq", function (request, response) {
+  const query = `SELECT * FROM faqs`;
+
+  db.all(query, function (error, faqs) {
+    const model = {
+      faqs,
+    };
+
+    response.render("faq.hbs", model);
+  });
+});
+
+/*FAQ POST*/
+app.post("/faq", function (request, response) {
+  const question = request.body.question;
+
+  const query = `INSERT INTO faqs (question) VALUES (?)`;
+
+  const value = [question];
+
+  db.run(query, value, function(error) {
+    response.redirect("/faq");
   });
 });
 
