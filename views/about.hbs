@@ -3,16 +3,16 @@
   <div class="columns">
     <div class="column col-12">
       <h4>About Me</h4>
-      <p>I'm Sandra, a 21 year-old who is currently based in Jönköping, where I
-        study Graphic Design and Web Development.
+      <p>I'm Sandra, a 21 year-old from Gothenburg who is currently based in
+        Jönköping, where I study Graphic Design and Web Development.
         <br />
         I've always loved art - photography, graphic design, painting, knitting
-        - you name it.
-        <br />
-        My work is focused on making ordinary things feel playful and bold.
+        - you name it. My work is focused on making ordinary things feel playful
+        and bold.
         <br />
         Hop in, keep all hands inside the vehicle and we'll go for a ride.
-        Please enjoy.</p></div>
+        Please enjoy.</p>
+    </div>
     <div class="column col-12">
       <h4>FAQ</h4>
       {{#if faqs.length}}
@@ -29,6 +29,19 @@
 
       {{/if}}
     </div>
+    <div class="column col-5">
+      <!-- https://picturepan2.github.io/spectre/elements/forms.html#forms-input -->
+      <div>
+        <form action="" method="POST">
+          <div>
+            <label class="form-label" for="input-example-1">Write your question
+              here:</label>
+            <input type="text" name="question" />
+          </div>
+          <input class="btn btn-primary" type="submit" value="Create FAQ" />
+        </form>
+      </div>
+    </div>
     <div class="column col-12">
       <h4>Reviews</h4>
       {{#if reviews.length}}
@@ -44,6 +57,18 @@
         <p>There are no reviews right now. Write the first one!</p>
 
       {{/if}}
+    </div>
+    <div class="column col-5">
+      <div>
+        <form action="" method="POST">
+          <div>
+            <label class="form-label" for="input-example-1">Write your review
+              here:</label>
+            <input type="text" name="review" />
+          </div>
+          <input class="btn btn-primary" type="submit" value="Create review" />
+        </form>
+      </div>
     </div>
   </div>
 </div>

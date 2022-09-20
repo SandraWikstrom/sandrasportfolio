@@ -1,6 +1,7 @@
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const data = require("./data.js");
+const sqlite3 = require('sqlite3')
 
 const app = express();
 
@@ -21,14 +22,20 @@ app.get("/portfolio", function (request, response) {
   response.render("portfolio.hbs");
 });
 
+app.get("/portfolio-admin", function (request, response) {
+  response.render("portfolio-admin.hbs");
+});
+
 app.get("/about-me", function (request, response) {
   const model = {
-    reviews: data.reviews,
     faqs: data.faqs,
+    reviews: data.reviews,
   };
 
   response.render("about.hbs", model);
 });
+
+
 
 app.get("/contact-me", function (request, response) {
   response.render("contact.hbs");
