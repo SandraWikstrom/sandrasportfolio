@@ -1,7 +1,15 @@
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
-const data = require("./data.js");
-const sqlite3 = require('sqlite3')
+const sqlite3 = require("sqlite3");
+
+const db = new sqlite3.Database("sandrasportfolio-database.db");
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY,
+    evaluation TEXT
+  )
+`);
 
 const app = express();
 
@@ -13,6 +21,12 @@ app.engine(
 );
 
 app.use(express.static("static"));
+
+app.use(
+	express.urlencoded({
+		extended: false
+	})
+)
 
 app.get("/", function (request, response) {
   response.render("home.hbs");
@@ -27,15 +41,28 @@ app.get("/portfolio-admin", function (request, response) {
 });
 
 app.get("/about-me", function (request, response) {
-  const model = {
-    faqs: data.faqs,
-    reviews: data.reviews,
-  };
+  const query = `SELECT * FROM reviews`;
 
-  response.render("about.hbs", model);
+  db.all(query, function (error, reviews) {
+    const model = {
+      reviews,
+    };
+
+    response.render("about.hbs", model);
+  });
 });
 
+app.post("/about-me", function (request, response) {
+  const evaluation = request.body.evaluation;
 
+  const query = `INSERT INTO reviews (evaluation) VALUES (?)`;
+
+  const value = [evaluation];
+
+  db.run(query, value, function(error) {
+    response.redirect("/about-me");
+  });
+});
 
 app.get("/contact-me", function (request, response) {
   response.render("contact.hbs");
