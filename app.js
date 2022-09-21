@@ -7,7 +7,8 @@ const db = new sqlite3.Database("sandrasportfolio-database.db");
 db.run(`
   CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY,
-    evaluation TEXT
+    evaluation TEXT,
+    grade INTEGER
   )
 `);
 
@@ -15,6 +16,13 @@ db.run(`
   CREATE TABLE IF NOT EXISTS faqs (
     id INTEGER PRIMARY KEY,
     question TEXT
+  )
+`);
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS blogs (
+    id INTEGER PRIMARY KEY,
+    blogpost TEXT
   )
 `);
 
@@ -47,8 +55,34 @@ app.get("/blog", function (request, response) {
   response.render("blog.hbs");
 });
 
+app.get("/faq-admin", function (request, response) {
+  response.render("faq-admin.hbs");
+});
+
+/*BLOG ADMIN GET*/
 app.get("/blog-admin", function (request, response) {
-  response.render("blog-admin.hbs");
+  const query = `SELECT * FROM blogs`;
+
+  db.all(query, function (error, blogs) {
+    const model = {
+      blogs,
+    };
+
+    response.render("blog-admin.hbs", model);
+  });
+});
+
+/*BLOG ADMIN POST*/
+app.post("/blog-admin", function (request, response) {
+  const blogpost = request.body.blogpost;
+
+  const query = `INSERT INTO blogs (blogpost) VALUES (?)`;
+
+  const value = [blogpost];
+
+  db.run(query, value, function (error) {
+    response.redirect("/blog-admin");
+  });
 });
 
 /*REVIEW GET*/
@@ -67,12 +101,13 @@ app.get("/about-me", function (request, response) {
 /*REVIEW POST*/
 app.post("/about-me", function (request, response) {
   const evaluation = request.body.evaluation;
+  const grade = request.body.grade;
 
-  const query = `INSERT INTO reviews (evaluation) VALUES (?)`;
+  const query = `INSERT INTO reviews (evaluation, grade) VALUES (?, ?)`;
 
-  const value = [evaluation];
+  const values = [evaluation, grade];
 
-  db.run(query, value, function (error) {
+  db.run(query, values, function (error) {
     response.redirect("/about-me");
   });
 });

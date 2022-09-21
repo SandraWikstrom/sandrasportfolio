@@ -5,6 +5,21 @@
       <h4>Blog</h4>
     </div>
     <div class="column col-12">
+      {{#if blogs.length}}
+
+        <ol class="list">
+          {{#each blogs}}
+            <li>{{blogpost}}</li>
+          {{/each}}
+        </ol>
+
+      {{else}}
+
+        <p>There are no blog posts right now.</p>
+
+      {{/if}}
+    </div>
+    <div class="column col-12">
       <form action="" method="POST">
           <div>
             <label class="form-label" for="input-example-1">Write blogpost:</label>

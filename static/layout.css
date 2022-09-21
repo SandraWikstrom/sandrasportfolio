@@ -11,6 +11,7 @@ body {
 }
 
 img {
+  margin-bottom: 5em;
   width: 20vw;
   object-fit: cover;
 }

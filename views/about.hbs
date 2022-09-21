@@ -18,11 +18,11 @@
       <h4>Reviews</h4>
       {{#if reviews.length}}
 
-        <ul>
+        <dl>
           {{#each reviews}}
-            <li>{{evaluation}}</li>
+            <dd>"{{evaluation}}" <br> &#11088;: {{grade}}/10 </dd>
           {{/each}}
-        </ul>
+        </dl>
 
       {{else}}
 
@@ -36,7 +36,9 @@
           <div>
             <label class="form-label" for="input-example-1">Write your review
               here:</label>
-            <input type="text" name="evaluation" />
+            <input type="text" placeholder="Review" name="evaluation" />
+            <input type="number" placeholder="Grade" name="grade" />
+          </div>
           </div>
           <input class="btn btn-primary" type="submit" value="Create review" />
         </form>
