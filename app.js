@@ -30,10 +30,10 @@ app.engine(
 app.use(express.static("static"));
 
 app.use(
-	express.urlencoded({
-		extended: false
-	})
-)
+  express.urlencoded({
+    extended: false,
+  })
+);
 
 app.get("/", function (request, response) {
   response.render("home.hbs");
@@ -43,8 +43,12 @@ app.get("/portfolio", function (request, response) {
   response.render("portfolio.hbs");
 });
 
-app.get("/portfolio-admin", function (request, response) {
-  response.render("portfolio-admin.hbs");
+app.get("/blog", function (request, response) {
+  response.render("blog.hbs");
+});
+
+app.get("/blog-admin", function (request, response) {
+  response.render("blog-admin.hbs");
 });
 
 /*REVIEW GET*/
@@ -68,7 +72,7 @@ app.post("/about-me", function (request, response) {
 
   const value = [evaluation];
 
-  db.run(query, value, function(error) {
+  db.run(query, value, function (error) {
     response.redirect("/about-me");
   });
 });
@@ -94,7 +98,7 @@ app.post("/faq", function (request, response) {
 
   const value = [question];
 
-  db.run(query, value, function(error) {
+  db.run(query, value, function (error) {
     response.redirect("/faq");
   });
 });
