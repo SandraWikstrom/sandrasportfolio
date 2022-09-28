@@ -4,6 +4,15 @@ const sqlite3 = require("sqlite3");
 
 const db = new sqlite3.Database("sandrasportfolio-database.db");
 
+//Creates table for blogs
+db.run(`
+  CREATE TABLE IF NOT EXISTS blogs (
+    id INTEGER PRIMARY KEY,
+    blogpost TEXT
+  )
+`);
+
+//Creates table for reviews
 db.run(`
   CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY,
@@ -12,6 +21,7 @@ db.run(`
   )
 `);
 
+//Creates table for faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS faqs (
     id INTEGER PRIMARY KEY,
@@ -19,13 +29,7 @@ db.run(`
   )
 `);
 
-db.run(`
-  CREATE TABLE IF NOT EXISTS blogs (
-    id INTEGER PRIMARY KEY,
-    blogpost TEXT
-  )
-`);
-
+//Creates table for answers to faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS answers (
     id INTEGER PRIMARY KEY,
@@ -33,6 +37,7 @@ db.run(`
     answer TEXT
   )
 `);
+
 const app = express();
 
 app.engine(
@@ -50,6 +55,7 @@ app.use(
   })
 );
 
+//Get requests for "static" pages
 app.get("/", function (request, response) {
   response.render("home.hbs");
 });
@@ -58,20 +64,15 @@ app.get("/portfolio", function (request, response) {
   response.render("portfolio.hbs");
 });
 
-/* FAQ-ADMIN GET*/
-app.get("/faq-admin", function (request, response) {
-  const query = `SELECT * FROM faqs`;
-
-  db.all(query, function (error, faqs) {
-    const model = {
-      faqs,
-    };
-
-    response.render("faq-admin.hbs", model);
-  });
+app.get("/contact-me", function (request, response) {
+  response.render("contact.hbs");
 });
 
-/*BLOG GET*/
+app.get("/log-in", function (request, response) {
+  response.render("login.hbs");
+});
+
+//Get request for BLOG
 app.get("/blog", function (request, response) {
   const query = `SELECT * FROM blogs`;
 
@@ -84,7 +85,7 @@ app.get("/blog", function (request, response) {
   });
 });
 
-/*BLOG ADMIN GET*/
+//Get request for BLOG-ADMIN
 app.get("/blog-admin", function (request, response) {
   const query = `SELECT * FROM blogs`;
 
@@ -97,7 +98,7 @@ app.get("/blog-admin", function (request, response) {
   });
 });
 
-/*BLOG ADMIN POST*/
+//Post request for BLOG-ADMIN
 app.post("/blog-admin", function (request, response) {
   const blogpost = request.body.blogpost;
 
@@ -110,7 +111,7 @@ app.post("/blog-admin", function (request, response) {
   });
 });
 
-/*REVIEW GET*/
+//Get request for REVIEWS
 app.get("/about-me", function (request, response) {
   const query = `SELECT * FROM reviews`;
 
@@ -123,7 +124,7 @@ app.get("/about-me", function (request, response) {
   });
 });
 
-/*REVIEW POST*/
+//Post request for REVIEWS
 app.post("/about-me", function (request, response) {
   const evaluation = request.body.evaluation;
   const grade = request.body.grade;
@@ -137,7 +138,7 @@ app.post("/about-me", function (request, response) {
   });
 });
 
-/*FAQ GET*/
+//Get request for FAQ
 app.get("/faq", function (request, response) {
   const query = `SELECT * FROM answers`;
 
@@ -150,7 +151,7 @@ app.get("/faq", function (request, response) {
   });
 });
 
-/*FAQ POST*/
+//Post request for FAQ
 app.post("/faq", function (request, response) {
   const question = request.body.question;
 
@@ -163,7 +164,20 @@ app.post("/faq", function (request, response) {
   });
 });
 
-/*FAQ-ADMIN POST*/
+//Get request for FAQ-ADMIN
+app.get("/faq-admin", function (request, response) {
+  const query = `SELECT * FROM faqs`;
+
+  db.all(query, function (error, faqs) {
+    const model = {
+      faqs,
+    };
+
+    response.render("faq-admin.hbs", model);
+  });
+});
+
+//Post request for FAQ-ADMIN
 app.post("/faq-admin", function (request, response) {
   const answer = request.body.answer;
   const approvedQuestion = request.body.approvedQuestion;
@@ -175,14 +189,6 @@ app.post("/faq-admin", function (request, response) {
   db.run(query, values, function (error) {
     response.redirect("/faq-admin");
   });
-});
-
-app.get("/contact-me", function (request, response) {
-  response.render("contact.hbs");
-});
-
-app.get("/log-in", function (request, response) {
-  response.render("login.hbs");
 });
 
 app.listen(8080);
