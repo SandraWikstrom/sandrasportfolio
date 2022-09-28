@@ -26,6 +26,13 @@ db.run(`
   )
 `);
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS answers (
+    id INTEGER PRIMARY KEY,
+    approvedQuestion TEXT,
+    answer TEXT
+  )
+`);
 const app = express();
 
 app.engine(
@@ -51,12 +58,30 @@ app.get("/portfolio", function (request, response) {
   response.render("portfolio.hbs");
 });
 
-app.get("/blog", function (request, response) {
-  response.render("blog.hbs");
+/* FAQ-ADMIN GET*/
+app.get("/faq-admin", function (request, response) {
+  const query = `SELECT * FROM faqs`;
+
+  db.all(query, function (error, faqs) {
+    const model = {
+      faqs,
+    };
+
+    response.render("faq-admin.hbs", model);
+  });
 });
 
-app.get("/faq-admin", function (request, response) {
-  response.render("faq-admin.hbs");
+/*BLOG GET*/
+app.get("/blog", function (request, response) {
+  const query = `SELECT * FROM blogs`;
+
+  db.all(query, function (error, blogs) {
+    const model = {
+      blogs,
+    };
+
+    response.render("blog.hbs", model);
+  });
 });
 
 /*BLOG ADMIN GET*/
@@ -114,11 +139,11 @@ app.post("/about-me", function (request, response) {
 
 /*FAQ GET*/
 app.get("/faq", function (request, response) {
-  const query = `SELECT * FROM faqs`;
+  const query = `SELECT * FROM answers`;
 
-  db.all(query, function (error, faqs) {
+  db.all(query, function (error, answers) {
     const model = {
-      faqs,
+      answers,
     };
 
     response.render("faq.hbs", model);
@@ -135,6 +160,20 @@ app.post("/faq", function (request, response) {
 
   db.run(query, value, function (error) {
     response.redirect("/faq");
+  });
+});
+
+/*FAQ-ADMIN POST*/
+app.post("/faq-admin", function (request, response) {
+  const answer = request.body.answer;
+  const approvedQuestion = request.body.approvedQuestion;
+
+  const query = `INSERT INTO answers (answer, approvedQuestion) VALUES (?, ?)`;
+
+  const values = [answer, approvedQuestion];
+
+  db.run(query, values, function (error) {
+    response.redirect("/faq-admin");
   });
 });
 

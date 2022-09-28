@@ -4,14 +4,15 @@
     <div class="column col-12">
       <h4>Blog</h4>
     </div>
-    <div class="column col-12">
-      {{#if faqs.length}}
+    <div class="column col-8">
+      {{#if blogs.length}}
 
-        <ul>
-          {{#each faqs}}
-            <li>{{question}}</li>
+        <ol>
+          {{#each blogs}}
+            <li>{{blogpost}}</li>
+            <div class="divider"></div>
           {{/each}}
-        </ul>
+        </ol>
 
       {{else}}
 

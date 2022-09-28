@@ -3,13 +3,14 @@
   <div class="columns">
   <div class="column col-12">
       <h4>FAQ</h4>
-      {{#if faqs.length}}
+      {{#if answers.length}} <!-- AND approvedQuestions -->
 
-        <ul>
-          {{#each faqs}}
-            <li>{{question}}</li>
+        <dl>
+          {{#each answers}}
+            <dt>{{approvedQuestion}}</dt>
+            <dd>{{answer}}</dd>
           {{/each}}
-        </ul>
+        </dl>
 
       {{else}}
 

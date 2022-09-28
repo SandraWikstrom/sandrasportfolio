@@ -6,6 +6,12 @@ body {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
+.divider {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border-color: rgb(130, 130, 201);
+}
+
 .container {
   margin: 5em;
 }
@@ -33,7 +39,7 @@ h4 {
 
 /* HOME STYLING */
 
-.homePageHero {
+.home-page-hero {
   text-align: center;
   margin-top: 10em;
 }
