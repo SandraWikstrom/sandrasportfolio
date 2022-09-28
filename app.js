@@ -2,6 +2,12 @@ const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const sqlite3 = require("sqlite3");
 
+const reviewMaxLength = 50;
+const faqMaxLength = 50;
+const blogpostMaxLength = 100;
+const answerMaxLength = 50;
+const approvedQuestionMaxLength = 50;
+
 const db = new sqlite3.Database("sandrasportfolio-database.db");
 
 //Creates table for blogs
@@ -102,13 +108,30 @@ app.get("/blog-admin", function (request, response) {
 app.post("/blog-admin", function (request, response) {
   const blogpost = request.body.blogpost;
 
-  const query = `INSERT INTO blogs (blogpost) VALUES (?)`;
+  const errorMessages = [];
 
-  const value = [blogpost];
+  if (blogpost == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (blogpostMaxLength < blogpost.length) {
+    errorMessages.push(
+      "Blogpost can't be longer than " + blogpostMaxLength + " characters."
+    );
+  }
 
-  db.run(query, value, function (error) {
-    response.redirect("/blog-admin");
-  });
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO blogs (blogpost) VALUES (?)`;
+
+    const value = [blogpost];
+
+    db.run(query, value, function (error) {
+      response.redirect("/blog-admin");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("blog-admin.hbs", model);
+  }
 });
 
 //Get request for REVIEWS
@@ -127,15 +150,40 @@ app.get("/about-me", function (request, response) {
 //Post request for REVIEWS
 app.post("/about-me", function (request, response) {
   const evaluation = request.body.evaluation;
-  const grade = request.body.grade;
+  const grade = parseInt(request.body.grade, 10);
 
-  const query = `INSERT INTO reviews (evaluation, grade) VALUES (?, ?)`;
+  const errorMessages = [];
 
-  const values = [evaluation, grade];
+  if (evaluation == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (reviewMaxLength < evaluation.length) {
+    errorMessages.push(
+      "Review can't be longer than " + reviewMaxLength + " characters."
+    );
+  }
 
-  db.run(query, values, function (error) {
-    response.redirect("/about-me");
-  });
+  if (isNaN(grade)) {
+    errorMessages.push("Put a number as the grade.");
+  } else if (grade < 0) {
+    errorMessages.push("Grade can't be lower than 0");
+  } else if (grade > 10) {
+    errorMessages.push("Grade can't be higher than 10");
+  }
+
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO reviews (evaluation, grade) VALUES (?, ?)`;
+
+    const values = [evaluation, grade];
+
+    db.run(query, values, function (error) {
+      response.redirect("/about-me");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("about.hbs", model);
+  }
 });
 
 //Get request for FAQ
@@ -155,13 +203,30 @@ app.get("/faq", function (request, response) {
 app.post("/faq", function (request, response) {
   const question = request.body.question;
 
-  const query = `INSERT INTO faqs (question) VALUES (?)`;
+  const errorMessages = [];
 
-  const value = [question];
+  if (question == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (faqMaxLength < question.length) {
+    errorMessages.push(
+      "Question can't be longer than " + faqMaxLength + " characters."
+    );
+  }
 
-  db.run(query, value, function (error) {
-    response.redirect("/faq");
-  });
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO faqs (question) VALUES (?)`;
+
+    const value = [question];
+
+    db.run(query, value, function (error) {
+      response.redirect("/faq");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("faq.hbs", model);
+  }
 });
 
 //Get request for FAQ-ADMIN
@@ -182,13 +247,69 @@ app.post("/faq-admin", function (request, response) {
   const answer = request.body.answer;
   const approvedQuestion = request.body.approvedQuestion;
 
-  const query = `INSERT INTO answers (answer, approvedQuestion) VALUES (?, ?)`;
+  const errorMessages = [];
 
-  const values = [answer, approvedQuestion];
+  if (answer == "") {
+    errorMessages.push("The answer-field can't be empty");
+  } else if (answerMaxLength < answer.length) {
+    errorMessages.push(
+      "Answer can't be longer than " + answerMaxLength + " characters."
+    );
+  }
+  if (approvedQuestion == "") {
+    errorMessages.push("The question-field can't be empty");
+  } else if (approvedQuestionMaxLength < approvedQuestion.length) {
+    errorMessages.push(
+      "Question can't be longer than " +
+        approvedQuestionMaxLength +
+        " characters."
+    );
+  }
 
-  db.run(query, values, function (error) {
-    response.redirect("/faq-admin");
-  });
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO answers (answer, approvedQuestion) VALUES (?, ?)`;
+
+    const values = [answer, approvedQuestion];
+
+    db.run(query, values, function (error) {
+      response.redirect("/faq-admin");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("faq-admin.hbs", model);
+  }
+});
+
+//Post request for FAQ
+app.post("/faq", function (request, response) {
+  const question = request.body.question;
+
+  const errorMessages = [];
+
+  if (question == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (faqMaxLength < question.length) {
+    errorMessages.push(
+      "Question can't be longer than " + faqMaxLength + " characters."
+    );
+  }
+
+  if (errorMessages.length == 0) {
+    const query = `INSERT INTO faqs (question) VALUES (?)`;
+
+    const value = [question];
+
+    db.run(query, value, function (error) {
+      response.redirect("/faq");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("faq.hbs", model);
+  }
 });
 
 app.listen(8080);

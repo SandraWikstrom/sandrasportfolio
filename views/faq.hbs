@@ -19,7 +19,14 @@
       {{/if}}
     </div>
     <div class="column col-5">
-      <!-- https://picturepan2.github.io/spectre/elements/forms.html#forms-input -->
+      {{#if errorMessages.length}}
+      <p>Couldn't submit because:</p>
+      <ul>
+        {{#each errorMessages}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+      {{/if}}
       <div>
         <form action="" method="POST">
           <div>
