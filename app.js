@@ -2,11 +2,11 @@ const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const sqlite3 = require("sqlite3");
 
-const reviewMaxLength = 50;
-const faqMaxLength = 50;
-const blogpostMaxLength = 100;
-const answerMaxLength = 50;
-const approvedQuestionMaxLength = 50;
+const REVIEW_MAX_LENGTH = 50;
+const FAQ_MAX_LENGTH = 50;
+const BLOGPOST_MAX_LENGTH = 100;
+const ANSWER_MAX_LENGTH = 50;
+const APPROVED_QUESTION_MAX_LENGTH = 50;
 
 const db = new sqlite3.Database("sandrasportfolio-database.db");
 
@@ -112,9 +112,9 @@ app.post("/blog-admin", function (request, response) {
 
   if (blogpost == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (blogpostMaxLength < blogpost.length) {
+  } else if (BLOGPOST_MAX_LENGTH < blogpost.length) {
     errorMessages.push(
-      "Blogpost can't be longer than " + blogpostMaxLength + " characters."
+      "Blogpost can't be longer than " + BLOGPOST_MAX_LENGTH + " characters."
     );
   }
 
@@ -156,9 +156,9 @@ app.post("/about-me", function (request, response) {
 
   if (evaluation == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (reviewMaxLength < evaluation.length) {
+  } else if (REVIEW_MAX_LENGTH < evaluation.length) {
     errorMessages.push(
-      "Review can't be longer than " + reviewMaxLength + " characters."
+      "Review can't be longer than " + REVIEW_MAX_LENGTH + " characters."
     );
   }
 
@@ -207,9 +207,9 @@ app.post("/faq", function (request, response) {
 
   if (question == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (faqMaxLength < question.length) {
+  } else if (FAQ_MAX_LENGTH < question.length) {
     errorMessages.push(
-      "Question can't be longer than " + faqMaxLength + " characters."
+      "Question can't be longer than " + FAQ_MAX_LENGTH + " characters."
     );
   }
 
@@ -251,17 +251,17 @@ app.post("/faq-admin", function (request, response) {
 
   if (answer == "") {
     errorMessages.push("The answer-field can't be empty");
-  } else if (answerMaxLength < answer.length) {
+  } else if (ANSWER_MAX_LENGTH < answer.length) {
     errorMessages.push(
-      "Answer can't be longer than " + answerMaxLength + " characters."
+      "Answer can't be longer than " + ANSWER_MAX_LENGTH + " characters."
     );
   }
   if (approvedQuestion == "") {
     errorMessages.push("The question-field can't be empty");
-  } else if (approvedQuestionMaxLength < approvedQuestion.length) {
+  } else if (APPROVED_QUESTION_MAX_LENGTH < approvedQuestion.length) {
     errorMessages.push(
       "Question can't be longer than " +
-        approvedQuestionMaxLength +
+        APPROVED_QUESTION_MAX_LENGTH +
         " characters."
     );
   }
@@ -290,9 +290,9 @@ app.post("/faq", function (request, response) {
 
   if (question == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (faqMaxLength < question.length) {
+  } else if (FAQ_MAX_LENGTH < question.length) {
     errorMessages.push(
-      "Question can't be longer than " + faqMaxLength + " characters."
+      "Question can't be longer than " + FAQ_MAX_LENGTH + " characters."
     );
   }
 
