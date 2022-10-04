@@ -16,7 +16,8 @@
       <form action="/blog-admin" method="POST">
           <div>
             <label class="form-label" for="input-example-1">Write blogpost:</label>
-            <input type="text" name="blogpost" />
+            <input type="text" placeholder="Blogtitle" name="blogtitle" value="{{blogtitle}}" />
+            <input type="text" placeholder="Blogpost" name="blogpost" value="{{blogpost}}"/>
           </div>
           <input class="btn btn-primary" type="submit" value="Send off to blog!" />
         </form>
@@ -25,14 +26,16 @@
     <div class="column col-8">
       {{#if blogs.length}}
 
-        <ol class="list">
+        <ul class="list">
           {{#each blogs}}
-            <li>{{blogpost}}</li>
-            <button class="btn btn-primary btn-sm">Delete</button>
-            <button class="btn btn-primary btn-sm">Edit</button>
+            {{blogtitle}}
+            <form action="/delete-blogtitle/{{id}}" method="POST">
+              <button class="btn btn-secondary btn-sm">Delete</button>
+              <button class="btn btn-secondary btn-sm">Edit</button>
+	          </form>
             <div class="divider"></div>
           {{/each}}
-        </ol>
+        </ul>
 
       {{else}}
 

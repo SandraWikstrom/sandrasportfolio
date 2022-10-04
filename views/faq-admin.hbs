@@ -1,42 +1,23 @@
 <div class="container">
   <div class="columns">
-    <div class="column col-12">
-      <h4>Collected FAQs</h4>
-      {{#if faqs.length}}
+  <div class="column col-12">
+      <h4>Delete or Edit FAQs</h4>
+      {{#if answers.length}}
 
-        <ul>
-          {{#each faqs}}
-            <li>{{question}}</li>
+        <dl>
+          {{#each answers}}
+            <dt>{{approvedQuestion}}</dt>
+            <dd>{{answer}}</dd>
+            <form action="/delete-answer/{{id}}" method="POST">
+              <button class="btn btn-secondary btn-sm">Delete</button>
+	        </form>
           {{/each}}
-        </ul>
+        </dl>
 
       {{else}}
 
         <p>There are no questions right now. Ask the first one!</p>
 
       {{/if}}
-    </div>
-    <div class="column col-5">
-      <div>
-        <h4>Answer FAQ</h4>
-        {{#if errorMessages.length}}
-      <p>Couldn't submit because:</p>
-      <ul>
-        {{#each errorMessages}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
-      {{/if}}
-      <div>
-        <form action="" method="POST"> 
-          <div>
-            <label class="form-label" for="input-example-1">Write the question and the answer here:</label>
-            <input type="text" placeholder="Question" name="approvedQuestion" />
-            <input type="text" placeholder="Answer" name="answer" />
-          </div>
-          <input class="btn btn-primary" type="submit" value="Create answer" />
-        </form>
-        </div>
-      </div>
     </div>
 </div>

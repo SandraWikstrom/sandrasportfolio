@@ -1,19 +1,25 @@
 const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const sqlite3 = require("sqlite3");
+const expressSession = require("express-session");
+const SQLiteStore = require("connect-sqlite3")(expressSession);
 
 const REVIEW_MAX_LENGTH = 50;
 const FAQ_MAX_LENGTH = 50;
-const BLOGPOST_MAX_LENGTH = 100;
+const BLOGTITLE_MAX_LENGTH = 10;
 const ANSWER_MAX_LENGTH = 50;
 const APPROVED_QUESTION_MAX_LENGTH = 50;
+
+const ADMIN_USERNAME = "Sandra";
+const ADMIN_PASSWORD = "hej123";
 
 const db = new sqlite3.Database("sandrasportfolio-database.db");
 
 //Creates table for blogs
 db.run(`
   CREATE TABLE IF NOT EXISTS blogs (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    blogtitle TEXT,
     blogpost TEXT
   )
 `);
@@ -21,7 +27,7 @@ db.run(`
 //Creates table for reviews
 db.run(`
   CREATE TABLE IF NOT EXISTS reviews (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     evaluation TEXT,
     grade INTEGER
   )
@@ -30,7 +36,7 @@ db.run(`
 //Creates table for faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS faqs (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     question TEXT
   )
 `);
@@ -38,7 +44,7 @@ db.run(`
 //Creates table for answers to faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS answers (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     approvedQuestion TEXT,
     answer TEXT
   )
@@ -61,6 +67,23 @@ app.use(
   })
 );
 
+app.use(
+  expressSession({
+    saveUninitialized: false,
+    resave: false,
+    secret: "fdgfdskdjslakfj",
+    store: new SQLiteStore(),
+  })
+);
+
+app.use(function (request, response, next) {
+  const isLoggedIn = request.session.isLoggedIn;
+
+  response.locals.isLoggedIn = isLoggedIn;
+
+  next();
+});
+
 //Get requests for "static" pages
 app.get("/", function (request, response) {
   response.render("home.hbs");
@@ -74,8 +97,27 @@ app.get("/contact-me", function (request, response) {
   response.render("contact.hbs");
 });
 
-app.get("/log-in", function (request, response) {
+app.post("/logout", function (request, response) {
+  request.session.isLoggedIn = false;
+  response.redirect("/"); //Make "logged out"-page
+});
+
+//Get request for LOGIN
+app.get("/login", function (request, response) {
   response.render("login.hbs");
+});
+
+//Post request for LOGIN
+app.post("/login", function (request, response) {
+  const enteredUsername = request.body.username;
+  const enteredPassword = request.body.password;
+
+  if (enteredUsername == ADMIN_USERNAME && enteredPassword == ADMIN_PASSWORD) {
+    request.session.isLoggedIn = true;
+    response.redirect("/");
+  } else {
+    response.redirect("/faq");
+  }
 });
 
 //Get request for BLOG
@@ -86,44 +128,52 @@ app.get("/blog", function (request, response) {
     const model = {
       blogs,
     };
-
     response.render("blog.hbs", model);
   });
 });
 
 //Get request for BLOG-ADMIN
 app.get("/blog-admin", function (request, response) {
-  const query = `SELECT * FROM blogs`;
+  if (request.session.isLoggedIn) {
+    const query = `SELECT * FROM blogs`;
 
-  db.all(query, function (error, blogs) {
-    const model = {
-      blogs,
-    };
+    db.all(query, function (error, blogs) {
+      const model = {
+        blogs,
+      };
 
-    response.render("blog-admin.hbs", model);
-  });
+      response.render("blog-admin.hbs", model);
+    });
+  } else {
+    response.redirect("/login");
+  }
 });
 
 //Post request for BLOG-ADMIN
 app.post("/blog-admin", function (request, response) {
+  const blogtitle = request.body.blogtitle;
   const blogpost = request.body.blogpost;
 
   const errorMessages = [];
 
-  if (blogpost == "") {
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in.");
+  }
+
+  if (blogtitle == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (BLOGPOST_MAX_LENGTH < blogpost.length) {
+  } else if (BLOGTITLE_MAX_LENGTH < blogtitle.length) {
     errorMessages.push(
-      "Blogpost can't be longer than " + BLOGPOST_MAX_LENGTH + " characters."
+      "Title can't be longer than " + BLOGTITLE_MAX_LENGTH + " characters."
     );
   }
 
   if (errorMessages.length == 0) {
-    const query = `INSERT INTO blogs (blogpost) VALUES (?)`;
+    const query = `INSERT INTO blogs (blogtitle, blogpost) VALUES (?, ?)`;
 
-    const value = [blogpost];
+    const values = [blogtitle, blogpost];
 
-    db.run(query, value, function (error) {
+    db.run(query, values, function (error) {
       response.redirect("/blog-admin");
     });
   } else {
@@ -132,6 +182,30 @@ app.post("/blog-admin", function (request, response) {
     };
     response.render("blog-admin.hbs", model);
   }
+});
+
+app.get("/blog/:id", function(request, response){
+  const id = request.params.id
+  
+  const query = `SELECT * FROM blogs WHERE id = ?`;
+  const values = [id]
+
+  db.get(query, values, function (error, blogs) {
+    const model = {
+      blogs,
+    };
+    response.render("blogpost.hbs", model);
+  });
+})
+
+//Post request for DELETE blog-admin
+app.post("/delete-blogtitle/:id", function (request, response) {
+  const id = request.params.id;
+  const query = `DELETE FROM blogs WHERE id = (?) `;
+
+  db.run(query, id, function (error) {
+    response.redirect("/blog-admin");
+  });
 });
 
 //Get request for REVIEWS
@@ -229,25 +303,56 @@ app.post("/faq", function (request, response) {
   }
 });
 
-//Get request for FAQ-ADMIN
+//Get request for FAQ-admin
 app.get("/faq-admin", function (request, response) {
-  const query = `SELECT * FROM faqs`;
+  const query = `SELECT * FROM answers`;
 
-  db.all(query, function (error, faqs) {
+  db.all(query, function (error, answers) {
     const model = {
-      faqs,
+      answers,
     };
 
     response.render("faq-admin.hbs", model);
   });
 });
 
-//Post request for FAQ-ADMIN
-app.post("/faq-admin", function (request, response) {
+//Post request for DELETE FAQ-admin
+app.post("/delete-answer/:id", function (request, response) {
+  const id = request.params.id;
+  const query = `DELETE FROM answers WHERE id = (?) `;
+
+  db.run(query, id, function (error) {
+    response.redirect("/faq-admin");
+  });
+});
+
+//Get request for create-answer-admin
+app.get("/create-answer-admin", function (request, response) {
+  if (request.session.isLoggedIn) {
+    const query = `SELECT * FROM faqs`;
+
+    db.all(query, function (error, faqs) {
+      const model = {
+        faqs,
+      };
+
+      response.render("create-answer-admin.hbs", model);
+    });
+  } else {
+    response.redirect("/login");
+  }
+});
+
+//Post request for create-answer-admin
+app.post("/create-answer-admin", function (request, response) {
   const answer = request.body.answer;
   const approvedQuestion = request.body.approvedQuestion;
 
   const errorMessages = [];
+
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in.");
+  }
 
   if (answer == "") {
     errorMessages.push("The answer-field can't be empty");
@@ -272,44 +377,24 @@ app.post("/faq-admin", function (request, response) {
     const values = [answer, approvedQuestion];
 
     db.run(query, values, function (error) {
-      response.redirect("/faq-admin");
+      response.redirect("/create-answer-admin");
     });
   } else {
     const model = {
       errorMessages,
     };
-    response.render("faq-admin.hbs", model);
+    response.render("create-answer-admin.hbs", model);
   }
 });
 
-//Post request for FAQ
-app.post("/faq", function (request, response) {
-  const question = request.body.question;
+//Post request for DELETE create-answer-admin
+app.post("/delete-faq/:id", function (request, response) {
+  const id = request.params.id;
+  const query = `DELETE FROM faqs WHERE id = (?) `;
 
-  const errorMessages = [];
-
-  if (question == "") {
-    errorMessages.push("The text-field can't be empty");
-  } else if (FAQ_MAX_LENGTH < question.length) {
-    errorMessages.push(
-      "Question can't be longer than " + FAQ_MAX_LENGTH + " characters."
-    );
-  }
-
-  if (errorMessages.length == 0) {
-    const query = `INSERT INTO faqs (question) VALUES (?)`;
-
-    const value = [question];
-
-    db.run(query, value, function (error) {
-      response.redirect("/faq");
-    });
-  } else {
-    const model = {
-      errorMessages,
-    };
-    response.render("faq.hbs", model);
-  }
+  db.run(query, id, function (error) {
+    response.redirect("/create-answer-admin");
+  });
 });
 
 app.listen(8080);

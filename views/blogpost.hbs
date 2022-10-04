@@ -1,17 +1,12 @@
 <div class="container">
   <div class "columns">
     <div class="column col-12">
-      <h4>Blog</h4>
     </div>
     <div class="column col-8">
-      {{#if blogs.length}}
+      {{#if blogs}}
 
-        <ul>
-          {{#each blogs}}
-            <a href="/blog/{{id}}">{{blogtitle}}</a>
-            <div class="divider"></div>
-          {{/each}}
-        </ul>
+        <h3>{{blogs.blogtitle}}</h3>
+        <p>{{blogs.blogpost}}</p>
 
       {{else}}
 

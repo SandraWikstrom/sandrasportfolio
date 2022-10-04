@@ -18,14 +18,27 @@
         <a href="/" class="navbar-brand mr-2">SANDRAS PORTFOLIO</a>
       </section>
       <section class="navbar-section">
-        <a href="portfolio" class="btn btn-link">Portfolio</a>
-        <a href="blog" class="btn btn-link">Blog</a>
-        <a href="blog-admin" class="btn btn-link">Blog Admin</a>
-        <a href="about-me" class="btn btn-link">About Me</a>
-        <a href="faq" class="btn btn-link">FAQ</a>
-        <a href="faq-admin" class="btn btn-link">FAQ Admin</a>
-        <a href="contact-me" class="btn btn-link">Contact Me</a>
-        <a href="log-in" class="btn btn-link">Log in</a>
+        <a href="/portfolio" class="btn btn-link">Portfolio</a>
+        <a href="/blog" class="btn btn-link">Blog</a>
+        <a href="/about-me" class="btn btn-link">About Me</a>
+        <a href="/faq" class="btn btn-link">FAQ</a>
+        <a href="/contact-me" class="btn btn-link">Contact Me</a>
+        {{#if isLoggedIn}}
+        <h5>ADMIN:</h5>
+          <a href="/blog-admin" class="btn btn-link">Blog</a>
+          <a href="/faq-admin" class="btn btn-link">FAQ</a>
+          <a href="/create-answer-admin" class="btn btn-link">Create Answer</a>
+        {{/if}}
+        {{#unless isLoggedIn}}
+          <a href="/login" class="btn btn-link">Log in</a>
+        {{/unless}}
+        {{#if isLoggedIn}}
+          <form action="/logout" method="POST">
+            <div>
+              <button class="btn btn-secondary">Log out</button>
+            </div>
+          </form>
+        {{/if}}
       </section>
     </header>
 
