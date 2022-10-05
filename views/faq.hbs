@@ -1,40 +1,37 @@
 <div class="container">
   <div class="columns">
-  <div class="column col-12">
+    <div class="column col-12">
       <h4>FAQ</h4>
       {{#if answers.length}}
-
         <dl>
           {{#each answers}}
             <dt>{{approvedQuestion}}</dt>
             <dd>{{answer}}</dd>
           {{/each}}
         </dl>
-
       {{else}}
-
         <p>There are no questions right now. Ask the first one!</p>
-
       {{/if}}
     </div>
     <div class="column col-5">
       {{#if errorMessages.length}}
-      <p>Couldn't submit because:</p>
-      <ul>
-        {{#each errorMessages}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
+        <p>Couldn't submit because:</p>
+        <ul>
+          {{#each errorMessages}}
+            <li>THIS</li>
+          {{/each}}
+        </ul>
       {{/if}}
       <div>
         <form action="" method="POST">
-          <div>
-            <label class="form-label" for="input-example-1">Write your question
-              here:</label>
-            <input type="text" name="question" />
-          </div>
-          <input class="btn btn-primary" type="submit" value="Create FAQ" />
+          <label class="form-label" for="input-example-1">Write your question
+            here:</label>
+          <input type="text" name="question" />
         </form>
+        <div>
+          <input class="btn btn-primary" type="submit" value="Create FAQ" />
+        </div>
       </div>
     </div>
+  </div>
 </div>

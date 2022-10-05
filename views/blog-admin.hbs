@@ -1,46 +1,63 @@
 <div class="container">
-  <div class "columns">
+  <div class="columns">
     <div class="column col-12">
-      <h4>Blog</h4>
-    </div>
-    <div class="column col-12">
+      <h4>Blog Admin</h4>
       {{#if errorMessages.length}}
-      <p>Couldn't submit because:</p>
-      <ul>
-        {{#each errorMessages}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
+        <p>Couldn't submit because:</p>
+        <ul>
+          {{#each errorMessages}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
       {{/if}}
       <div>
-      <form action="/blog-admin" method="POST">
+        <form action="/blog-admin" method="POST">
           <div>
             <label class="form-label" for="input-example-1">Write blogpost:</label>
-            <input type="text" placeholder="Blogtitle" name="blogtitle" value="{{blogtitle}}" />
-            <input type="text" placeholder="Blogpost" name="blogpost" value="{{blogpost}}"/>
+            <input
+              type="text"
+              placeholder="Blogtitle"
+              name="blogtitle"
+              value="{{blogtitle}}"
+            />
+            <input
+              type="text"
+              placeholder="Blogpost"
+              name="blogpost"
+              value="{{blogpost}}"
+            />
           </div>
-          <input class="btn btn-primary" type="submit" value="Send off to blog!" />
+          <div>
+            <input
+              class="btn btn-primary"
+              type="submit"
+              value="Send off to blog!"
+            />
+          </div>
         </form>
       </div>
     </div>
     <div class="column col-8">
       {{#if blogs.length}}
-
-        <ul class="list">
-          {{#each blogs}}
-            {{blogtitle}}
-            <form action="/delete-blogtitle/{{id}}" method="POST">
-              <button class="btn btn-secondary btn-sm">Delete</button>
+      <ul class="list">
+        {{#each blogs}}
+        <strong>{{blogtitle}}</strong>
+        <div class="blogbuttons">
+          <form action="/delete-blogtitle{{id}}" method="POST">
+            <button class="btn btn-secondary btn-sm">Delete</button>
+          </form>
+          <div>
+            <a href="/blogpost-update/{{id}}">
               <button class="btn btn-secondary btn-sm">Edit</button>
-	          </form>
-            <div class="divider"></div>
+            </a>
+          </div>
+          <div class="divider"></div>
           {{/each}}
-        </ul>
-
+        </div>
+      </ul>
       {{else}}
-
-        <p>There are no blog posts right now.</p>
-
+      <p>There are no blog posts right now.</p>
       {{/if}}
     </div>
   </div>
+</div>

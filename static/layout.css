@@ -12,6 +12,10 @@ body {
   border-color: rgb(130, 130, 201);
 }
 
+.blogbuttons {
+  margin-top: 1em;
+}
+
 .container {
   margin: 5em;
 }
