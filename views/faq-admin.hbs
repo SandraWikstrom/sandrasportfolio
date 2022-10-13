@@ -1,7 +1,11 @@
 <div class="container">
   <div class="columns">
-    <div class="column col-12">
+    <div class="column col-9">
       <h4>Delete or Edit FAQs</h4>
+      <p>Here, you can see your answered FAQs that have already been answered.
+        If you'd like to edit or delete an FAQ, use the buttons.
+      </p>
+      <div class="divider"></div>
       {{#if answers.length}}
         <dl>
           {{#each answers}}
@@ -10,6 +14,9 @@
             <form action="/delete-answer/{{id}}" method="POST">
               <button class="btn btn-secondary btn-sm">Delete</button>
             </form>
+            <a href="/faq-update/{{id}}">
+              <button class="btn btn-secondary btn-sm">Edit</button>
+            </a>
           {{/each}}
         </dl>
       {{else}}

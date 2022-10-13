@@ -1,6 +1,10 @@
 <div class="container">
   <div class="columns">
-    <div class="column col-12">
+    <div class="column col-9">
+      <h4>Create Answer to an FAQ</h4>
+      <p>Here, you can see all of the questions that people have sent in. You
+        can choose to either delete or answer them.</p>
+      <div class="divider"></div>
       <h4>Collected FAQs</h4>
       {{#if faqs.length}}
         <ul>
@@ -15,31 +19,31 @@
         <p>There are no questions right now.</p>
       {{/if}}
     </div>
-    <div class="column col-5">
+    <div class="column col-9">
+      <div class="divider"></div>
+      <h4>Answer FAQ</h4>
+      {{#if errorMessages.length}}
+        <p>Couldn't submit because:</p>
+        <ul>
+          {{#each errorMessages}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      {{/if}}
       <div>
-        <h4>Answer FAQ</h4>
-        {{#if errorMessages.length}}
-          <p>Couldn't submit because:</p>
-          <ul>
-            {{#each errorMessages}}
-              <li>{{this}}</li>
-            {{/each}}
-          </ul>
-        {{/if}}
-        <div>
-          <form action="" method="POST">
-            <label class="form-label" for="input-example-1">Write the question
-              and the answer here:</label>
-            <input type="text" placeholder="Question" name="approvedQuestion" />
-            <input type="text" placeholder="Answer" name="answer" />
-          </form>
-          <div><input
-              class="btn btn-primary"
-              type="submit"
-              value="Create answer"
-            /></div>
-        </div>
+        <form action="" method="POST">
+          <label class="form-label" for="input-example-1">Write the question and
+            the answer here:</label>
+          <input type="text" placeholder="Question" name="approvedQuestion" />
+          <input type="text" placeholder="Answer" name="answer" />
+        </form>
+        <div><input
+            class="btn btn-primary"
+            type="submit"
+            value="Create answer"
+          /></div>
       </div>
+      <div class="divider"></div>
     </div>
   </div>
 </div>

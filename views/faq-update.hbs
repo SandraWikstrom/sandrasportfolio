@@ -1,7 +1,7 @@
 <div class="container">
   <div class="columns">
     <div class="column col-12">
-      <h4>Edit blogpost</h4>
+      <h4>Edit FAQ</h4>
     </div>
     <div class="column col-12">
       {{#if errorMessages.length}}
@@ -16,18 +16,18 @@
     <div class="column col-8">
       <div>
         <form method="POST">
-          <label class="form-label" for="input-example-1">Edit blogpost:</label>
+          <label class="form-label" for="input-example-1">Edit faq:</label>
           <input
             type="text"
-            placeholder="Blogtitle"
-            name="blogtitle"
-            value="{{blogtitle}}"
+            placeholder="Question"
+            name="approvedQuestion"
+            value="{{approvedQuestion}}"
           />
           <input
             type="text"
-            placeholder="Blogpost"
-            name="blogpost"
-            value="{{blogpost}}"
+            placeholder="Answer"
+            name="answer"
+            value="{{answer}}"
           />
           <div>
             <input class="btn btn-primary" type="submit" value="Update" />

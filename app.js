@@ -4,6 +4,10 @@ const sqlite3 = require("sqlite3");
 const expressSession = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(expressSession);
 
+//const db = require("./db.js")
+
+//db.getAllBlogs
+
 // Variables - Blog
 const BLOGTITLE_MAX_LENGTH = 10;
 const BLOGPOST_MAX_LENGTH = 100;
@@ -45,7 +49,7 @@ db.run(`
   )
 `);
 
-//Creates table for answers to faqs
+//Creates table for answers and approved questions for faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS answers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,21 +105,13 @@ app.get("/contact-me", function (request, response) {
   response.render("contact.hbs");
 });
 
-app.post("/logout", function (request, response) {
-  request.session.isLoggedIn = false;
-  response.redirect("/"); //Make "logged out"-page
+app.get("/logout", function (request, response) {
+  response.render("logout.hbs");
 });
 
-//Get request for BLOG
-app.get("/blog", function (request, response) {
-  const query = `SELECT * FROM blogs`;
-
-  db.all(query, function (error, blogs) {
-    const model = {
-      blogs,
-    };
-    response.render("blog.hbs", model);
-  });
+app.post("/logout", function (request, response) {
+  request.session.isLoggedIn = false;
+  response.redirect("/logout");
 });
 
 //Get request for BLOG/:ID
@@ -446,6 +442,63 @@ app.post("/delete-faq/:id", function (request, response) {
   db.run(query, id, function (error) {
     response.redirect("/create-answer-admin");
   });
+});
+
+//Get request for UPDATE FAQ/:ID
+app.get("/faq-update/:id", function (request, response) {
+  const id = request.params.id;
+
+  const query = `SELECT * FROM answers WHERE id = ?`;
+  const values = [id];
+
+  db.get(query, values, function (error, answers) {
+    const model = {
+      answers,
+    };
+    response.render("faq-update.hbs", model);
+  });
+});
+
+//Post request for UPDATE FAQ/:ID
+app.post("/faq-update/:id", function (request, response) {
+  const id = request.params.id;
+  const updatedApprovedQuestion = request.body.approvedQuestion;
+  const updatedAnswer = request.body.answer;
+
+  const errorMessages = [];
+
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
+
+  if (updatedApprovedQuestion == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (APPROVED_QUESTION_MAX_LENGTH < updatedApprovedQuestion.length) {
+    errorMessages.push(
+      "Question can't be longer than " + APPROVED_QUESTION_MAX_LENGTH + " characters."
+    );
+  }
+  if (updatedAnswer == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (ANSWER_MAX_LENGTH < updatedAnswer.length) {
+    errorMessages.push(
+      "Answer can't be longer than " + ANSWER_MAX_LENGTH + " characters."
+    );
+  }
+
+  if (errorMessages.length == 0) {
+    const query = `UPDATE answers SET approvedQuestion = ?, answer = ? WHERE id = ?`;
+    const values = [updatedApprovedQuestion, updatedAnswer, id];
+
+    db.run(query, values, function (error) {
+      response.redirect("/faq-admin/");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("faq-update.hbs", model);
+  }
 });
 
 //Get request for LOGIN
