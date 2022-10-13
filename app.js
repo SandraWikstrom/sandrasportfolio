@@ -2,15 +2,12 @@ const express = require("express");
 const expressHandlebars = require("express-handlebars");
 const sqlite3 = require("sqlite3");
 const expressSession = require("express-session");
+const { response } = require("express");
 const SQLiteStore = require("connect-sqlite3")(expressSession);
-
-//const db = require("./db.js")
-
-//db.getAllBlogs
 
 // Variables - Blog
 const BLOGTITLE_MAX_LENGTH = 10;
-const BLOGPOST_MAX_LENGTH = 100;
+const BLOGPOST_MAX_LENGTH = 1000;
 
 const REVIEW_MAX_LENGTH = 50;
 
@@ -101,8 +98,12 @@ app.get("/portfolio", function (request, response) {
   response.render("portfolio.hbs");
 });
 
-app.get("/contact-me", function (request, response) {
-  response.render("contact.hbs");
+app.get("/admin", function (request, response) {
+  response.render("admin.hbs");
+});
+
+app.get("/about", function (request, response) {
+  response.render("about.hbs");
 });
 
 app.get("/logout", function (request, response) {
@@ -114,6 +115,23 @@ app.post("/logout", function (request, response) {
   response.redirect("/logout");
 });
 
+//Get request for BLOG
+app.get("/blog", function (request, response) {
+  const query = `SELECT * FROM blogs`;
+
+  db.all(query, function (error, blogs) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
+    const model = {
+      errorMessages,
+      blogs,
+    };
+    response.render("blog.hbs", model);
+  });
+});
+
 //Get request for BLOG/:ID
 app.get("/blog/:id", function (request, response) {
   const id = request.params.id;
@@ -122,7 +140,12 @@ app.get("/blog/:id", function (request, response) {
   const values = [id];
 
   db.get(query, values, function (error, blogs) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
+      errorMessages,
       blogs,
     };
     response.render("blogpost.hbs", model);
@@ -135,8 +158,13 @@ app.get("/blog-admin", function (request, response) {
     const query = `SELECT * FROM blogs`;
 
     db.all(query, function (error, blogs) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+      }
       const model = {
-        blogs,
+        errorMessages,
+        blogs
       };
 
       response.render("blog-admin.hbs", model);
@@ -178,11 +206,24 @@ app.post("/blog-admin", function (request, response) {
     const values = [blogtitle, blogpost];
 
     db.run(query, values, function (error) {
-      response.redirect("/blog-admin");
+      if (error) {
+        errorMessages.push("Internal server error");
+        const model = {
+          errorMessages,
+          blogtitle,
+          blogpost,
+        };
+
+        response.render("blog-admin.hbs", model);
+      } else {
+        response.redirect("/blog-admin");
+      }
     });
   } else {
     const model = {
       errorMessages,
+      blogtitle,
+      blogpost
     };
     response.render("blog-admin.hbs", model);
   }
@@ -206,7 +247,12 @@ app.get("/blogpost-update/:id", function (request, response) {
   const values = [id];
 
   db.get(query, values, function (error, blogs) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
+      errorMessages,
       blogs,
     };
     response.render("blogpost-update.hbs", model);
@@ -216,8 +262,8 @@ app.get("/blogpost-update/:id", function (request, response) {
 //Post request for UPDATE BLOG/:ID
 app.post("/blogpost-update/:id", function (request, response) {
   const id = request.params.id;
-  const updatedBlogpost = request.body.blogpost;
-  const updatedBlogtitle = request.body.blogtitle;
+  const blogpost = request.body.blogpost;
+  const blogtitle = request.body.blogtitle;
 
   const errorMessages = [];
 
@@ -225,16 +271,16 @@ app.post("/blogpost-update/:id", function (request, response) {
     errorMessages.push("You have to log in");
   }
 
-  if (updatedBlogtitle == "") {
-    errorMessages.push("The text-field can't be empty");
-  } else if (BLOGTITLE_MAX_LENGTH < updatedBlogtitle.length) {
+  if (blogtitle == "") {
+    errorMessages.push("The title can't be empty");
+  } else if (BLOGTITLE_MAX_LENGTH < blogtitle.length) {
     errorMessages.push(
       "Title can't be longer than " + BLOGTITLE_MAX_LENGTH + " characters."
     );
   }
-  if (updatedBlogpost == "") {
-    errorMessages.push("The text-field can't be empty");
-  } else if (BLOGPOST_MAX_LENGTH < updatedBlogpost.length) {
+  if (blogpost == "") {
+    errorMessages.push("The blogpost can't be empty");
+  } else if (BLOGPOST_MAX_LENGTH < blogpost.length) {
     errorMessages.push(
       "Blogpost can't be longer than " + BLOGPOST_MAX_LENGTH + " characters."
     );
@@ -242,7 +288,7 @@ app.post("/blogpost-update/:id", function (request, response) {
 
   if (errorMessages.length == 0) {
     const query = `UPDATE blogs SET blogpost = ?, blogtitle = ? WHERE id = ?`;
-    const values = [updatedBlogpost, updatedBlogtitle, id];
+    const values = [blogpost, blogtitle, id];
 
     db.run(query, values, function (error) {
       response.redirect("/blog/" + id);
@@ -251,25 +297,30 @@ app.post("/blogpost-update/:id", function (request, response) {
     const model = {
       errorMessages,
     };
-    response.render("blogpost-update.hbs", model);
+   response.render("blogpost-update.hbs", model);
   }
 });
 
 //Get request for REVIEWS
-app.get("/about-me", function (request, response) {
+app.get("/review", function (request, response) {
   const query = `SELECT * FROM reviews`;
 
   db.all(query, function (error, reviews) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
+      errorMessages,
       reviews,
     };
 
-    response.render("about.hbs", model);
+    response.render("review.hbs", model);
   });
 });
 
 //Post request for REVIEWS
-app.post("/about-me", function (request, response) {
+app.post("/review", function (request, response) {
   const evaluation = request.body.evaluation;
   const grade = parseInt(request.body.grade, 10);
 
@@ -297,13 +348,128 @@ app.post("/about-me", function (request, response) {
     const values = [evaluation, grade];
 
     db.run(query, values, function (error) {
-      response.redirect("/about-me");
+      response.redirect("/review");
     });
   } else {
     const model = {
       errorMessages,
     };
-    response.render("about.hbs", model);
+    response.render("review.hbs", model);
+  }
+});
+
+//Get request for review-ADMIN
+app.get("/review-admin", function (request, response) {
+  if (request.session.isLoggedIn) {
+    const query = `SELECT * FROM reviews`;
+
+    db.all(query, function (error, reviews) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+      }
+      const model = {
+        errorMessages,
+        reviews
+      };
+
+      response.render("review-admin.hbs", model);
+    });
+  } else {
+    response.redirect("/review-admin");
+  }
+});
+
+//Post request for DELETE REVIEW
+app.post("/delete-review/:id", function (request, response) {
+  const id = request.params.id;
+  const query = `DELETE FROM reviews WHERE id = (?) `;
+
+  db.run(query, id, function (error) {
+    response.redirect("/review-admin");
+  });
+});
+
+//Get request for UPDATE REVIEW/:ID
+app.get("/review-update/:id", function (request, response) {
+  const id = request.params.id;
+
+  const query = `SELECT * FROM reviews WHERE id = ?`;
+  const values = [id];
+
+  db.get(query, values, function (error, reviews) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
+    const model = {
+      errorMessages,
+      reviews,
+    };
+    response.render("review-update.hbs", model);
+  });
+});
+
+//Post request for UPDATE REVIEW/:ID
+app.post("/review-update/:id", function (request, response) {
+  const id = request.params.id;
+  const evaluation = request.body.evaluation;
+  const grade = parseInt(request.body.grade, 10);
+
+  const errorMessages = [];
+
+  if (!request.session.isLoggedIn) {
+    errorMessages.push("You have to log in");
+  }
+
+  if (evaluation == "") {
+    errorMessages.push("The text-field can't be empty");
+  } else if (REVIEW_MAX_LENGTH < evaluation.length) {
+    errorMessages.push(
+      "Review can't be longer than " +
+        REVIEW_MAX_LENGTH +
+        " characters."
+    );
+  }
+  
+  if (isNaN(grade)) {
+    errorMessages.push("Put a number as the grade.");
+  } else if (grade < 0) {
+    errorMessages.push("Grade can't be lower than 0");
+  } else if (grade > 10) {
+    errorMessages.push("Grade can't be higher than 10");
+  }
+
+  if (errorMessages.length == 0) {
+    const query = `UPDATE reviews SET evaluation = ?, grade = ? WHERE id = ?`;
+    const values = [evaluation, grade, id];
+
+    db.run(query, values, function (error) {
+      response.redirect("/review-admin/");
+    });
+  } else {
+    const model = {
+      errorMessages,
+    };
+    response.render("review-update.hbs", model);
+  }
+});
+
+//Get request for LOGIN
+app.get("/login", function (request, response) {
+  response.render("login.hbs");
+});
+
+//Post request for LOGIN
+app.post("/login", function (request, response) {
+  const enteredUsername = request.body.username;
+  const enteredPassword = request.body.password;
+
+  if (enteredUsername == ADMIN_USERNAME && enteredPassword == ADMIN_PASSWORD) {
+    request.session.isLoggedIn = true;
+    response.redirect("/");
+  } else {
+    response.redirect("/faq"); //ADD "WRONG PASSWORD OR USERNAME"
   }
 });
 
@@ -312,7 +478,12 @@ app.get("/faq", function (request, response) {
   const query = `SELECT * FROM answers`;
 
   db.all(query, function (error, answers) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
+      errorMessages,
       answers,
     };
 
@@ -355,7 +526,12 @@ app.get("/faq-admin", function (request, response) {
   const query = `SELECT * FROM answers`;
 
   db.all(query, function (error, answers) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
+      errorMessages,
       answers,
     };
 
@@ -379,7 +555,12 @@ app.get("/create-answer-admin", function (request, response) {
     const query = `SELECT * FROM faqs`;
 
     db.all(query, function (error, faqs) {
+      const errorMessages = [];
+      if (error) {
+        errorMessages.push("Internal server error");
+      }
       const model = {
+        errorMessages,
         faqs,
       };
 
@@ -452,7 +633,12 @@ app.get("/faq-update/:id", function (request, response) {
   const values = [id];
 
   db.get(query, values, function (error, answers) {
+    const errorMessages = [];
+    if (error) {
+      errorMessages.push("Internal server error");
+    }
     const model = {
+      errorMessages,
       answers,
     };
     response.render("faq-update.hbs", model);
@@ -462,8 +648,8 @@ app.get("/faq-update/:id", function (request, response) {
 //Post request for UPDATE FAQ/:ID
 app.post("/faq-update/:id", function (request, response) {
   const id = request.params.id;
-  const updatedApprovedQuestion = request.body.approvedQuestion;
-  const updatedAnswer = request.body.answer;
+  const approvedQuestion = request.body.approvedQuestion;
+  const answer = request.body.answer;
 
   const errorMessages = [];
 
@@ -471,16 +657,18 @@ app.post("/faq-update/:id", function (request, response) {
     errorMessages.push("You have to log in");
   }
 
-  if (updatedApprovedQuestion == "") {
+  if (approvedQuestion == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (APPROVED_QUESTION_MAX_LENGTH < updatedApprovedQuestion.length) {
+  } else if (APPROVED_QUESTION_MAX_LENGTH < approvedQuestion.length) {
     errorMessages.push(
-      "Question can't be longer than " + APPROVED_QUESTION_MAX_LENGTH + " characters."
+      "Question can't be longer than " +
+        APPROVED_QUESTION_MAX_LENGTH +
+        " characters."
     );
   }
-  if (updatedAnswer == "") {
+  if (answer == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (ANSWER_MAX_LENGTH < updatedAnswer.length) {
+  } else if (ANSWER_MAX_LENGTH < answer.length) {
     errorMessages.push(
       "Answer can't be longer than " + ANSWER_MAX_LENGTH + " characters."
     );
@@ -488,7 +676,7 @@ app.post("/faq-update/:id", function (request, response) {
 
   if (errorMessages.length == 0) {
     const query = `UPDATE answers SET approvedQuestion = ?, answer = ? WHERE id = ?`;
-    const values = [updatedApprovedQuestion, updatedAnswer, id];
+    const values = [approvedQuestion, answer, id];
 
     db.run(query, values, function (error) {
       response.redirect("/faq-admin/");

@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="columns">
+    <div class="column col-12">
+      <h4>Edit review</h4>
+    </div>
+    <div class="column col-12">
+      {{#if errorMessages.length}}
+        <p>Couldn't submit because:</p>
+        <ul>
+          {{#each errorMessages}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    </div>
+    <div class="column col-8">
+      <div>
+        <form method="POST">
+          <label class="form-label" for="input-example-1">Edit review:</label>
+          <input
+            type="text"
+            placeholder="Review"
+            name="evaluation"
+            value="{{evaluation}}"/>
+          <input
+            type="number"
+            placeholder="Grade"
+            name="grade"
+            value="{{grade}}"
+          />
+          <div>
+            <input class="btn btn-primary" type="submit" value="Update" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,48 +11,9 @@
         <br />
         Hop in, keep all hands inside the vehicle and we'll go for a ride.
         Please enjoy.</p>
-    </div>
-
-    <div class="column col-12">
-      <h4>Reviews</h4>
-      {{#if reviews.length}}
-        <dl>
-          {{#each reviews}}
-            <dd>"{{evaluation}}" <br /> &#11088;: {{grade}}/10</dd>
-          {{/each}}
-        </dl>
-
-      {{else}}
-        <p>There are no reviews right now.</p>
-      {{/if}}
-    </div>
-
-    <div class="column col-5">
-      {{#if errorMessages.length}}
-        <p>Couldn't submit because:</p>
-        <ul>
-          {{#each errorMessages}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      {{/if}}
-      <div>
-        <form action="" method="POST">
-          <div>
-            <label class="form-label" for="input-example-1">Write your review
-              here:</label>
-            <input type="text" placeholder="Review" name="evaluation" />
-            <input type="number" placeholder="Grade" name="grade" />
-          </div>
-          <div>
-            <input
-              class="btn btn-primary"
-              type="submit"
-              value="Create review"
-            />
-          </div>
-        </form>
-      </div>
+      <h4>Contact Me</h4>
+      <p>E-mail: wisa21rw@student.ju.se</p>
+      <p>Phone number: 031-555-87</p>
     </div>
   </div>
 </div>

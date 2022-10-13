@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="columns">
+    <div class="column col-12">
+      <h4>Reviews</h4>
+      {{#if reviews.length}}
+        <dl>
+          {{#each reviews}}
+            <dd>"{{evaluation}}" <br /> &#11088;: {{grade}}/10</dd>
+            <form action="/delete-review/{{id}}" method="POST">
+              <button class="btn btn-secondary btn-sm">Delete</button>
+            </form>
+            <a href="/about-update/{{id}}">
+              <button class="btn btn-secondary btn-sm">Edit</button>
+            </a>
+          {{/each}}
+        </dl>
+
+      {{else}}
+        <p>There are no reviews right now.</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

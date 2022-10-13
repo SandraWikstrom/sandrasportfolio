@@ -18,17 +18,14 @@
         <a href="/" class="navbar-brand mr-2">SANDRAS PORTFOLIO</a>
       </section>
       <section class="navbar-section">
+        {{#if isLoggedIn}}
+          <a href="/admin" class="btn btn-link">ADMIN-PAGES</a>
+        {{/if}}
         <a href="/portfolio" class="btn btn-link">Portfolio</a>
         <a href="/blog" class="btn btn-link">Blog</a>
-        <a href="/about-me" class="btn btn-link">About Me</a>
+        <a href="/review" class="btn btn-link">Reviews</a>
         <a href="/faq" class="btn btn-link">FAQ</a>
-        <a href="/contact-me" class="btn btn-link">Contact Me</a>
-        {{#if isLoggedIn}}
-          <h5>ADMIN:</h5>
-          <a href="/blog-admin" class="btn btn-link">Blog</a>
-          <a href="/faq-admin" class="btn btn-link">FAQ</a>
-          <a href="/create-answer-admin" class="btn btn-link">Answer FAQ</a>
-        {{/if}}
+        <a href="/about" class="btn btn-link">About/contact</a>
         {{#unless isLoggedIn}}
           <a href="/login" class="btn btn-link">Log in</a>
         {{/unless}}

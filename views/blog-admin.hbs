@@ -2,14 +2,6 @@
   <div class="columns">
     <div class="column col-12">
       <h4>Blog Admin</h4>
-      {{#if errorMessages.length}}
-        <p>Couldn't submit because:</p>
-        <ul>
-          {{#each errorMessages}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      {{/if}}
       <div>
         <form action="/blog-admin" method="POST">
           <div>
@@ -36,27 +28,36 @@
           </div>
         </form>
       </div>
-    </div>
-    <div class="column col-8">
-      {{#if blogs.length}}
-      <ul class="list">
-        {{#each blogs}}
-        <strong>{{blogtitle}}</strong>
-        <div class="blogbuttons">
-          <form action="/delete-blogtitle{{id}}" method="POST">
-            <button class="btn btn-secondary btn-sm">Delete</button>
-          </form>
-          <div>
-            <a href="/blogpost-update/{{id}}">
-              <button class="btn btn-secondary btn-sm">Edit</button>
-            </a>
-          </div>
-          <div class="divider"></div>
+      {{#if errorMessages.length}}
+        <p>Couldn't submit because:</p>
+        <ul>
+          {{#each errorMessages}}
+            <li>{{this}}</li>
           {{/each}}
-        </div>
-      </ul>
+        </ul>
       {{else}}
-      <p>There are no blog posts right now.</p>
+        {{#if blogs.length}}
+          <div class="column col-8">
+            <ul class="list">
+              {{#each blogs}}
+                <strong>{{blogtitle}}</strong>
+                <div class="blogbuttons">
+                  <form action="/delete-blogtitle/{{id}}" method="POST">
+                    <button class="btn btn-secondary btn-sm">Delete</button>
+                  </form>
+                  <div>
+                    <a href="/blogpost-update/{{id}}">
+                      <button class="btn btn-secondary btn-sm">Edit</button>
+                    </a>
+                  </div>
+                  <div class="divider"></div>
+                </div>
+              {{/each}}
+            </ul>
+          </div>
+        {{else}}
+          <p>There are no blogposts right now</p>
+        {{/if}}
       {{/if}}
     </div>
   </div>
