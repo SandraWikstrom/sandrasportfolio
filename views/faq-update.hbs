@@ -11,6 +11,12 @@
             <li>{{this}}</li>
           {{/each}}
         </ul>
+        <dl>
+          {{#each answers}}
+            <dt>{{approvedQuestion}}</dt>
+            <dd>{{answer}}</dd>
+          {{/each}}
+        </dl>
       {{/if}}
     </div>
     <div class="column col-8">

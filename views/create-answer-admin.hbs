@@ -10,13 +10,13 @@
         <ul>
           {{#each faqs}}
             <li>{{question}}</li>
-            <form action="/delete-faq{{id}}" method="POST">
+            <form action="/delete-faq/{{id}}" method="POST">
               <button class="btn btn-secondary btn-sm">Delete</button>
             </form>
           {{/each}}
         </ul>
       {{else}}
-        <p>There are no questions right now.</p>
+        <p>Nothing to see here!</p>
       {{/if}}
     </div>
     <div class="column col-9">
@@ -36,12 +36,8 @@
             the answer here:</label>
           <input type="text" placeholder="Question" name="approvedQuestion" />
           <input type="text" placeholder="Answer" name="answer" />
+          <input class="btn btn-primary" type="submit" value="Create answer" />
         </form>
-        <div><input
-            class="btn btn-primary"
-            type="submit"
-            value="Create answer"
-          /></div>
       </div>
       <div class="divider"></div>
     </div>

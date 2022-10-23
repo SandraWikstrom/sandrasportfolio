@@ -4,6 +4,14 @@
       <h4>Log in</h4>
     </div>
     <div class="column col-3">
+      {{#if errorMessages.length}}
+        <p>Couldn't login because:</p>
+        <ul>
+          {{#each errorMessages}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      {{/if}}
       <form action="/login" method="POST">
         <div>
           <label class="form-label" for="input-example-1">Username</label>
