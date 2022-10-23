@@ -8,6 +8,8 @@
             <dd>"{{evaluation}}" <br /> &#11088;: {{grade}}/10</dd>
           {{/each}}
         </dl>
+        {{else}}
+        <p>There are no reviews right now.</p>
       {{/if}}
     </div>
     <div class="column col-5">
@@ -18,8 +20,6 @@
             <li>{{this}}</li>
           {{/each}}
         </ul>
-      {{else}}
-        <p>There are no reviews right now.</p>
       {{/if}}
       <div>
         <form action="" method="POST">
