@@ -3,24 +3,24 @@ const expressHandlebars = require("express-handlebars");
 const sqlite3 = require("sqlite3");
 const expressSession = require("express-session");
 const { response } = require("express");
+const bcrypt = require("bcryptjs/dist/bcrypt");
 const SQLiteStore = require("connect-sqlite3")(expressSession);
 
-// Variables - Blog
-const BLOGTITLE_MAX_LENGTH = 10;
-const BLOGPOST_MAX_LENGTH = 1000;
+const blogtitleMaxLength = 10;
+const blogpostMaxLength = 1000;
 
-const REVIEW_MAX_LENGTH = 50;
+const reviewMaxLength = 50;
 
-const FAQ_MAX_LENGTH = 50;
-const ANSWER_MAX_LENGTH = 50;
-const APPROVED_QUESTION_MAX_LENGTH = 50;
+const faqMaxLength = 50;
+const answerMaxLength = 50;
+const approvedQuestionMaxLength = 50;
 
-const ADMIN_USERNAME = "Sandra";
-const ADMIN_PASSWORD = "hej123";
+const adminUsername = "draco";
+const adminPassword =
+  "$2a$08$PUImd3eEnS45KuB50kZNJulCzwlgI/f4uu4uVJQdewNjsKQ2YQPki";
 
 const db = new sqlite3.Database("sandrasportfolio-database.db");
 
-//Creates table for blogs
 db.run(`
   CREATE TABLE IF NOT EXISTS blogs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +29,6 @@ db.run(`
   )
 `);
 
-//Creates table for reviews
 db.run(`
   CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +37,6 @@ db.run(`
   )
 `);
 
-//Creates table for faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS faqs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,7 +44,6 @@ db.run(`
   )
 `);
 
-//Creates table for answers and approved questions for faqs
 db.run(`
   CREATE TABLE IF NOT EXISTS answers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,7 +86,6 @@ app.use(function (request, response, next) {
   next();
 });
 
-//"Static" pages
 app.get("/", function (request, response) {
   response.render("home.hbs");
 });
@@ -115,7 +111,6 @@ app.post("/logout", function (request, response) {
   response.redirect("/logout");
 });
 
-//Get request for BLOG
 app.get("/blog", function (request, response) {
   const query = `SELECT * FROM blogs`;
 
@@ -132,7 +127,6 @@ app.get("/blog", function (request, response) {
   });
 });
 
-//Get request for BLOG/:ID
 app.get("/blog/:id", function (request, response) {
   const id = request.params.id;
 
@@ -152,7 +146,6 @@ app.get("/blog/:id", function (request, response) {
   });
 });
 
-//Get request for BLOG-ADMIN
 app.get("/blog-admin", function (request, response) {
   if (request.session.isLoggedIn) {
     const query = `SELECT * FROM blogs`;
@@ -164,7 +157,7 @@ app.get("/blog-admin", function (request, response) {
       }
       const model = {
         errorMessages,
-        blogs
+        blogs,
       };
 
       response.render("blog-admin.hbs", model);
@@ -174,7 +167,6 @@ app.get("/blog-admin", function (request, response) {
   }
 });
 
-//Post request for BLOG-ADMIN
 app.post("/blog-admin", function (request, response) {
   const blogtitle = request.body.blogtitle;
   const blogpost = request.body.blogpost;
@@ -187,16 +179,16 @@ app.post("/blog-admin", function (request, response) {
 
   if (blogtitle == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (BLOGTITLE_MAX_LENGTH < blogtitle.length) {
+  } else if (blogtitleMaxLength < blogtitle.length) {
     errorMessages.push(
-      "Title can't be longer than " + BLOGTITLE_MAX_LENGTH + " characters."
+      "Title can't be longer than " + blogtitleMaxLength + " characters."
     );
   }
   if (blogpost == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (BLOGPOST_MAX_LENGTH < blogpost.length) {
+  } else if (blogpostMaxLength < blogpost.length) {
     errorMessages.push(
-      "Blogpost can't be longer than " + BLOGPOST_MAX_LENGTH + " characters."
+      "Blogpost can't be longer than " + blogpostMaxLength + " characters."
     );
   }
 
@@ -223,13 +215,12 @@ app.post("/blog-admin", function (request, response) {
     const model = {
       errorMessages,
       blogtitle,
-      blogpost
+      blogpost,
     };
     response.render("blog-admin.hbs", model);
   }
 });
 
-//Post request for DELETE BLOG-ADMIN
 app.post("/delete-blogtitle/:id", function (request, response) {
   const id = request.params.id;
   const query = `DELETE FROM blogs WHERE id = (?) `;
@@ -239,7 +230,6 @@ app.post("/delete-blogtitle/:id", function (request, response) {
   });
 });
 
-//Get request for UPDATE BLOG/:ID
 app.get("/blogpost-update/:id", function (request, response) {
   const id = request.params.id;
 
@@ -259,7 +249,6 @@ app.get("/blogpost-update/:id", function (request, response) {
   });
 });
 
-//Post request for UPDATE BLOG/:ID
 app.post("/blogpost-update/:id", function (request, response) {
   const id = request.params.id;
   const blogpost = request.body.blogpost;
@@ -273,16 +262,16 @@ app.post("/blogpost-update/:id", function (request, response) {
 
   if (blogtitle == "") {
     errorMessages.push("The title can't be empty");
-  } else if (BLOGTITLE_MAX_LENGTH < blogtitle.length) {
+  } else if (blogtitleMaxLength < blogtitle.length) {
     errorMessages.push(
-      "Title can't be longer than " + BLOGTITLE_MAX_LENGTH + " characters."
+      "Title can't be longer than " + blogtitleMaxLength + " characters."
     );
   }
   if (blogpost == "") {
     errorMessages.push("The blogpost can't be empty");
-  } else if (BLOGPOST_MAX_LENGTH < blogpost.length) {
+  } else if (blogpostMaxLength < blogpost.length) {
     errorMessages.push(
-      "Blogpost can't be longer than " + BLOGPOST_MAX_LENGTH + " characters."
+      "Blogpost can't be longer than " + blogpostMaxLength + " characters."
     );
   }
 
@@ -297,11 +286,10 @@ app.post("/blogpost-update/:id", function (request, response) {
     const model = {
       errorMessages,
     };
-   response.render("blogpost-update.hbs", model);
+    response.render("blogpost-update.hbs", model);
   }
 });
 
-//Get request for REVIEWS
 app.get("/review", function (request, response) {
   const query = `SELECT * FROM reviews`;
 
@@ -319,7 +307,6 @@ app.get("/review", function (request, response) {
   });
 });
 
-//Post request for REVIEWS
 app.post("/review", function (request, response) {
   const evaluation = request.body.evaluation;
   const grade = parseInt(request.body.grade, 10);
@@ -328,9 +315,9 @@ app.post("/review", function (request, response) {
 
   if (evaluation == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (REVIEW_MAX_LENGTH < evaluation.length) {
+  } else if (reviewMaxLength < evaluation.length) {
     errorMessages.push(
-      "Review can't be longer than " + REVIEW_MAX_LENGTH + " characters."
+      "Review can't be longer than " + reviewMaxLength + " characters."
     );
   }
 
@@ -358,7 +345,6 @@ app.post("/review", function (request, response) {
   }
 });
 
-//Get request for review-ADMIN
 app.get("/review-admin", function (request, response) {
   if (request.session.isLoggedIn) {
     const query = `SELECT * FROM reviews`;
@@ -370,7 +356,7 @@ app.get("/review-admin", function (request, response) {
       }
       const model = {
         errorMessages,
-        reviews
+        reviews,
       };
 
       response.render("review-admin.hbs", model);
@@ -380,7 +366,6 @@ app.get("/review-admin", function (request, response) {
   }
 });
 
-//Post request for DELETE REVIEW
 app.post("/delete-review/:id", function (request, response) {
   const id = request.params.id;
   const query = `DELETE FROM reviews WHERE id = (?) `;
@@ -390,7 +375,6 @@ app.post("/delete-review/:id", function (request, response) {
   });
 });
 
-//Get request for UPDATE REVIEW/:ID
 app.get("/review-update/:id", function (request, response) {
   const id = request.params.id;
 
@@ -410,7 +394,6 @@ app.get("/review-update/:id", function (request, response) {
   });
 });
 
-//Post request for UPDATE REVIEW/:ID
 app.post("/review-update/:id", function (request, response) {
   const id = request.params.id;
   const evaluation = request.body.evaluation;
@@ -424,14 +407,12 @@ app.post("/review-update/:id", function (request, response) {
 
   if (evaluation == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (REVIEW_MAX_LENGTH < evaluation.length) {
+  } else if (reviewMaxLength < evaluation.length) {
     errorMessages.push(
-      "Review can't be longer than " +
-        REVIEW_MAX_LENGTH +
-        " characters."
+      "Review can't be longer than " + reviewMaxLength + " characters."
     );
   }
-  
+
   if (isNaN(grade)) {
     errorMessages.push("Put a number as the grade.");
   } else if (grade < 0) {
@@ -455,25 +436,48 @@ app.post("/review-update/:id", function (request, response) {
   }
 });
 
-//Get request for LOGIN
 app.get("/login", function (request, response) {
   response.render("login.hbs");
 });
 
-//Post request for LOGIN
 app.post("/login", function (request, response) {
   const enteredUsername = request.body.username;
   const enteredPassword = request.body.password;
 
-  if (enteredUsername == ADMIN_USERNAME && enteredPassword == ADMIN_PASSWORD) {
-    request.session.isLoggedIn = true;
-    response.redirect("/");
+  const errorMessages = [];
+
+  if (enteredUsername == "") {
+    errorMessages.push("The username can't be empty");
+  } else if (enteredUsername != adminUsername) {
+    errorMessages.push("Wrong Username.");
+  }
+
+  if (enteredPassword == "") {
+    errorMessages.push("The password can't be empty");
+  } else if (enteredPassword != adminPassword) {
+    errorMessages.push("Wrong Password.");
+  }
+
+  if (enteredUsername == adminUsername) {
+    bcrypt.compare(enteredPassword, adminPassword, function (error, result) {
+      if (result) {
+        request.session.isLoggedIn = true;
+        response.redirect("/");
+      } else {
+        const model = {
+          errorMessages,
+        };
+        response.render("login.hbs", model);
+      }
+    });
   } else {
-    response.redirect("/faq"); //ADD "WRONG PASSWORD OR USERNAME"
+    const model = {
+      errorMessages,
+    };
+    response.render("login.hbs", model);
   }
 });
 
-//Get request for FAQ
 app.get("/faq", function (request, response) {
   const query = `SELECT * FROM answers`;
 
@@ -491,7 +495,6 @@ app.get("/faq", function (request, response) {
   });
 });
 
-//Post request for FAQ
 app.post("/faq", function (request, response) {
   const question = request.body.question;
 
@@ -499,9 +502,9 @@ app.post("/faq", function (request, response) {
 
   if (question == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (FAQ_MAX_LENGTH < question.length) {
+  } else if (faqMaxLength < question.length) {
     errorMessages.push(
-      "Question can't be longer than " + FAQ_MAX_LENGTH + " characters."
+      "Question can't be longer than " + faqMaxLength + " characters."
     );
   }
 
@@ -521,7 +524,6 @@ app.post("/faq", function (request, response) {
   }
 });
 
-//Get request for FAQ-ADMIN
 app.get("/faq-admin", function (request, response) {
   const query = `SELECT * FROM answers`;
 
@@ -539,7 +541,6 @@ app.get("/faq-admin", function (request, response) {
   });
 });
 
-//Post request for DELETE FAQ-ADMIN
 app.post("/delete-answer/:id", function (request, response) {
   const id = request.params.id;
   const query = `DELETE FROM answers WHERE id = (?) `;
@@ -549,7 +550,6 @@ app.post("/delete-answer/:id", function (request, response) {
   });
 });
 
-//Get request for CREATE-ANSWER-ADMIN
 app.get("/create-answer-admin", function (request, response) {
   if (request.session.isLoggedIn) {
     const query = `SELECT * FROM faqs`;
@@ -571,7 +571,6 @@ app.get("/create-answer-admin", function (request, response) {
   }
 });
 
-//Post request for CREATE-ANSWER-ADMIN
 app.post("/create-answer-admin", function (request, response) {
   const answer = request.body.answer;
   const approvedQuestion = request.body.approvedQuestion;
@@ -584,17 +583,17 @@ app.post("/create-answer-admin", function (request, response) {
 
   if (answer == "") {
     errorMessages.push("The answer-field can't be empty");
-  } else if (ANSWER_MAX_LENGTH < answer.length) {
+  } else if (answerMaxLength < answer.length) {
     errorMessages.push(
-      "Answer can't be longer than " + ANSWER_MAX_LENGTH + " characters."
+      "Answer can't be longer than " + answerMaxLength + " characters."
     );
   }
   if (approvedQuestion == "") {
     errorMessages.push("The question-field can't be empty");
-  } else if (APPROVED_QUESTION_MAX_LENGTH < approvedQuestion.length) {
+  } else if (approvedQuestionMaxLength < approvedQuestion.length) {
     errorMessages.push(
       "Question can't be longer than " +
-        APPROVED_QUESTION_MAX_LENGTH +
+        approvedQuestionMaxLength +
         " characters."
     );
   }
@@ -615,7 +614,6 @@ app.post("/create-answer-admin", function (request, response) {
   }
 });
 
-//Post request for DELETE CREATE-ANSWER-ADMIN
 app.post("/delete-faq/:id", function (request, response) {
   const id = request.params.id;
   const query = `DELETE FROM faqs WHERE id = (?) `;
@@ -625,7 +623,6 @@ app.post("/delete-faq/:id", function (request, response) {
   });
 });
 
-//Get request for UPDATE FAQ/:ID
 app.get("/faq-update/:id", function (request, response) {
   const id = request.params.id;
 
@@ -645,7 +642,6 @@ app.get("/faq-update/:id", function (request, response) {
   });
 });
 
-//Post request for UPDATE FAQ/:ID
 app.post("/faq-update/:id", function (request, response) {
   const id = request.params.id;
   const approvedQuestion = request.body.approvedQuestion;
@@ -659,18 +655,18 @@ app.post("/faq-update/:id", function (request, response) {
 
   if (approvedQuestion == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (APPROVED_QUESTION_MAX_LENGTH < approvedQuestion.length) {
+  } else if (approvedQuestionMaxLength < approvedQuestion.length) {
     errorMessages.push(
       "Question can't be longer than " +
-        APPROVED_QUESTION_MAX_LENGTH +
+        approvedQuestionMaxLength +
         " characters."
     );
   }
   if (answer == "") {
     errorMessages.push("The text-field can't be empty");
-  } else if (ANSWER_MAX_LENGTH < answer.length) {
+  } else if (answerMaxLength < answer.length) {
     errorMessages.push(
-      "Answer can't be longer than " + ANSWER_MAX_LENGTH + " characters."
+      "Answer can't be longer than " + answerMaxLength + " characters."
     );
   }
 
@@ -686,24 +682,6 @@ app.post("/faq-update/:id", function (request, response) {
       errorMessages,
     };
     response.render("faq-update.hbs", model);
-  }
-});
-
-//Get request for LOGIN
-app.get("/login", function (request, response) {
-  response.render("login.hbs");
-});
-
-//Post request for LOGIN
-app.post("/login", function (request, response) {
-  const enteredUsername = request.body.username;
-  const enteredPassword = request.body.password;
-
-  if (enteredUsername == ADMIN_USERNAME && enteredPassword == ADMIN_PASSWORD) {
-    request.session.isLoggedIn = true;
-    response.redirect("/");
-  } else {
-    response.redirect("/faq"); //ADD "WRONG PASSWORD OR USERNAME"
   }
 });
 
